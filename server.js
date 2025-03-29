@@ -2,10 +2,11 @@ import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import multer from 'multer';
-import path from 'path';
+import path, { dirname } from 'path';
 import pdfRoutes from './routes/pdfRoutes.js';
 import dotenv from 'dotenv';
 import fs from 'fs';
+import { fileURLToPath } from 'url';
 
 dotenv.config();
 
@@ -103,6 +104,14 @@ app.use('/uploads', express.static('uploads'));
 
 // Apply multer middleware to the upload route
 app.use('/api/pdf', upload.single('pdf'), pdfRoutes);
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+app.use(express.static(path.resolve(__dirname, "./public")));
+
+app.get('*', (req, res) => {
+  res.sendFile(path.resolve(__dirname, "./public", "index.html"));
+});
+
 
 // Error handling middleware
 app.use((err, req, res, next) => {
